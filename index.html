@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ভোটার-অনুসন্ধান</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<button id="noticeBtn" class="notice-button">
+    ⚠️ দেখুন
+</button>
+
+<div id="noticeModal" class="modal">
+    <div class="modal-content">
+        <span class="close-btn">&times;</span>
+        <div class="modal-header">
+            <h3>📢 বিশেষ ঘোষণা</h3>
+        </div>
+        <div class="modal-body">
+            <p>ত্রয়োদশ জাতীয় সংসদ নির্বাচন_ এর জন্য ভোটার তালিকা ..২৫-কুড়িগ্রাম-০১ নাগেশ্বরী, বামনডাঙ্গা, কুটির চর ০৭ নং ওয়ার্ড</p>
+            <ul>
+                <li>নির্বাচনী এলাকা: কুটির চর</li>
+                <li>এখানে •মালিয়ানী
+                •তেলিয়ানী পূর্ব: এই এলাকর ভোটারদের তথ্য পাবেন না। </li>
+            </ul>
+        </div>
+
+    </div>
+</div>
+
+<div class="container">
+    <div class="header-section">
+        <img src="https://amardaripalla.com/media/Daripalla_logo.png" alt="EC Logo" class="ec-logo">
+        
+        
+        <p class="election-title">ত্রয়োদশ জাতীয় সংসদ নির্বাচন ২০২৬</p>
+        <h2>ভোটার সিরিয়াল অনুসন্ধান</h2>
+    </div>
+    
+    <div class="search-card">
+        <div class="field-group">
+            <label>ইউনিয়ন ও ওয়ার্ড</label>
+            <div class="input-row">
+                <select id="union">
+                    <option value="বামনডাঙ্গা">বামনডাঙ্গা</option>
+                    <option value="রায়গঞ্জ">রায়গঞ্জ</option>
+                </select>
+                <select id="ward">
+                    <option value="1">ওয়ার্ড ১</option>
+                    <option value="2">ওয়ার্ড ২</option>
+                    <option value="3">ওয়ার্ড ৩</option>
+                    <option value="4">ওয়ার্ড ৪</option>
+                    <option value="5">ওয়ার্ড ৫</option>
+                    <option value="6">ওয়ার্ড ৬</option>
+                    <option value="7">ওয়ার্ড ৭</option>
+                    <option value="8">ওয়ার্ড ৮</option>
+                    <option value="9">ওয়ার্ড ৯</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="field-group">
+            <label>লিঙ্গ ও অনুসন্ধান</label>
+            <div class="input-row">
+                <select id="gender" style="flex: 1.2;">
+                    <option value="সব">👥 সব</option>
+                    <option value="পুরুষ">👤 পুরুষ</option>
+                    <option value="নারী">🧕 নারী</option>
+                </select>
+                <input type="text" id="searchInput" placeholder="🔎 নাম বা সাল" style="flex: 2;" onkeypress="if(event.key==='Enter') searchVoter()">
+            </div>
+        </div>
+        <button class="search-btn" onclick="searchVoter()">🔄 খুঁজুন</button>
+    </div>
+
+    <div id="resultArea"></div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
+<script>
+    const firebaseConfig = {
+        apiKey: "AIzaSyAzGK_y9kx5oVFL1-rGTnSDxDvdYoVIqOg",
+        authDomain: "bmkf-donation-system.firebaseapp.com",
+        databaseURL: "https://bmkf-donation-system-default-rtdb.asia-southeast1.firebasedatabase.app",
+        projectId: "bmkf-donation-system",
+        storageBucket: "bmkf-donation-system.firebasestorage.app",
+        messagingSenderId: "718912081844",
+        appId: "1:718912081844:web:98d102b1a6dc07464cace1"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const database = firebase.database();
+
+    function searchVoter() {
+        const union = document.getElementById('union').value;
+        const ward = document.getElementById('ward').value;
+        const gender = document.getElementById('gender').value;
+        const query = document.getElementById('searchInput').value.trim();
+        const resultArea = document.getElementById('resultArea');
+
+        if (!query) { alert("⚠️ নাম বা তারিখ লিখুন!"); return; }
+        
+        resultArea.innerHTML = `<div class="loader-container"><div class="spinner"></div><span>খোঁজা হচ্ছে...</span></div>`;
+
+        database.ref('voters/' + union + '/ward_' + ward).once('value', (snapshot) => {
+            resultArea.innerHTML = "";
+            let htmlContent = "";
+
+            if (snapshot.exists()) {
+                snapshot.forEach((genderNode) => {
+                    if (gender === "সব" || genderNode.key === gender) {
+                        genderNode.forEach((voterNode) => {
+                            const data = voterNode.val();
+                            if (data.name.toLowerCase().includes(query.toLowerCase()) || data.dob.includes(query)) {
+                                htmlContent += `
+                                    <div class="voter-card ${data.gender}">
+                                        <div class="gender-badge">${data.gender === 'পুরুষ' ? '♂' : '♀'} ${data.gender}</div>
+                                        <span class="name-tag">${data.serial}. ${data.name}</span>
+                                        <div class="info-grid">
+                                            <div class="info"><b>ভোটার আইডি</b>${data.voter_id}</div>
+                                            <div class="info"><b>জন্ম তারিখ</b>${data.dob}</div>
+                                            <div class="info"><b>পিতার নাম</b>${data.father}</div>
+                                            <div class="info"><b>মাতার নাম</b>${data.mother}</div>
+                                        </div>
+                                        <div class="address-box">
+                                            <b>ঠিকানা:</b> ${data.address}
+                                        </div>
+                                    </div>`;
+                            }
+                        });
+                    }
+                });
+                resultArea.innerHTML = htmlContent || "<div class='no-result'>দুঃখিত, কোনো মিল পাওয়া যায়নি!</div>";
+            } else {
+                resultArea.innerHTML = "<div class='no-result'>কোনো তথ্য নেই।</div>";
+            }
+        });
+    }
+   const modal = document.getElementById("noticeModal");
+const btn = document.getElementById("noticeBtn");
+const span = document.querySelector(".close-btn");
+
+// বাটন ক্লিক করলে পপ-আপ খুলবে
+btn.onclick = function() {
+    modal.style.display = "block";
+}
+
+// (x) বাটনে ক্লিক করলে বন্ধ হবে
+span.onclick = function() {
+    modal.style.display = "none";
+}
+
+// পপ-আপের নিচের বাটনে ক্লিক করলে বন্ধ হবে
+function closeModal() {
+    modal.style.display = "none";
+}
+
+// পপ-আপের বাইরে কোথাও ক্লিক করলে বন্ধ হবে
+window.onclick = function(event) {
+    if (event.target == modal) {
+        modal.style.display = "none";
+    }
+}
+ 
+    
+</script>
+</body>
+</html>

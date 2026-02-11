@@ -1,0 +1,330 @@
+/* General Setup */
+/* ১. অ্যানিমেশন কি-ফ্রেম তৈরি */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ২. প্রজেক্টের সব মূল উপাদানে অ্যানিমেশন প্রয়োগ */
+/* এখানে আপনার প্রজেক্টের কমন ক্লাসগুলো রাখা হয়েছে */
+.header-section, 
+.search-card, 
+.notice-button, 
+.container,
+.voter-card,
+#resultArea {
+    opacity: 0; /* শুরুতে লুকানো থাকবে */
+    animation: fadeInUp 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+/* ৩. ভিন্ন ভিন্ন সময়ে লোড হওয়ার জন্য বিলম্ব (Delay) যোগ করা (ঐচ্ছিক কিন্তু সুন্দর দেখায়) */
+.header-section { animation-delay: 0.1s; }
+.search-card { animation-delay: 0.3s; }
+.notice-button { animation-delay: 0.5s; }
+
+body { 
+    font-family: 'SolaimanLipi', sans-serif; 
+    background-color: #f1f5f9; 
+    margin: 0; 
+    padding: 15px; 
+}
+body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    
+    /* লিনিয়ার গ্রেডিয়েন্ট এবং ইমেজ একসাথে ব্যবহার করা হয়েছে */
+    background-image: 
+        /*linear-gradient(to bottom,  #238 50%, transparent 50%), */
+        url('bg.png'); 
+    
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    
+    /* ঝাপসা করার কোড */
+    filter: blur(4px); 
+    
+    /* এটিকে লেখার নিচে পাঠানোর জন্য */
+    z-index: -1; 
+    
+    /* ধারের সাদা অংশ দূর করতে */
+    transform: scale(1.1); 
+}
+
+.container { 
+    max-width: 600px; 
+    margin: auto; 
+}
+
+.header-section {
+    text-align: center;
+    margin-bottom: 20px;
+ 
+}
+
+.ec-logo { width: 90px; height: auto; margin-top: -38px; }
+.election-title { font-size: 23px; color: #fff; font-weight: bold; margin: 0; 
+}
+h2 { color: yellow; font-size: 18px; margin: 5px 0; font-weight: 800; }
+
+/* Search Card Design 
+.search-card { 
+    background: #ffffff; 
+    padding: 20px; 
+    border-radius: 12px; 
+    box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05); 
+    margin-bottom: 25px;
+    border: 2px solid yellow;
+}*/
+.search-card {
+    position: relative; /* মানচিত্র পজিশন করার জন্য */
+    background-color: #ffffff; 
+    padding: 20px;
+    border-radius: 12px;
+    border: 2px solid #0CFF17;
+    box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+    overflow: hidden; /* মানচিত্র কার্ডের বাইরে যাবে না */
+    z-index: 1;
+}
+
+/* কার্ডের ভেতরে মানচিত্র বসানোর জন্য ::before এলিমেন্ট */
+.search-card::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    height: 100%;
+    
+    /* বাংলাদেশের মানচিত্রের স্বচ্ছ ইমেজ লিঙ্ক */
+    background-image: url('bd map.png');
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain; /* কার্ডের সাইজ অনুযায়ী সেট হবে */
+    
+    /* ওপাসিটি (Opacity) নিয়ন্ত্রণ - এখান থেকে ০.১ কমিয়ে বাড়িয়ে অ্যাডজাস্ট করতে পারেন */
+    opacity: 0.3; 
+    
+    z-index: -1; /* ইনপুট এবং বাটনের নিচে দেখাবে */
+}
+.field-group { margin-bottom: 15px; }
+.field-group label { font-size: 13px; font-weight: bold; color: green; display: block; margin-bottom: 8px; }
+#union, #ward, #gender, #searchInput {
+    color: #E41F26;
+}
+
+.input-row { display: flex; gap: 10px; }
+select, input { 
+    width: 100%; height: 42px; border: 1px solid #cbd5e1; 
+    border-radius: 8px; padding: 0 12px; outline: none; font-size: 14px;
+    background-color: #f8fafc; transition: 0.3s;
+}
+select:focus, input:focus { border-color: #1a73e8; background-color: #fff; }
+
+.search-btn { 
+    margin-left: 65px;
+    width: 50%; padding: 12px; background: #059669; color: white; 
+    border: none; border-radius: 8px; font-size: 16px; font-weight: bold; 
+    cursor: pointer; transition: 0.3s;
+}
+.search-btn:active { transform: scale(0.98); }
+
+/* Horizontal Scrolling Result Area */
+#resultArea {
+    display: flex;
+    overflow-x: auto;
+    gap: 15px;
+    padding: 10px 5px;
+    scroll-behavior: smooth;
+}
+#resultArea::-webkit-scrollbar { height: 6px; }
+#resultArea::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+
+/* Voter Card Slim Design */
+.voter-card { 
+    min-width: 280px; 
+    max-width: 290px;
+    background: #ffffff; 
+    border-radius: 12px; 
+    border: solid red 2px;
+    padding: 15px; 
+    position: relative; 
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    flex-shrink: 0;
+}
+
+.name-tag { 
+    font-size: 17px; 
+    font-weight: 800; 
+    color: #1e293b; 
+    display: block;
+    margin-bottom: 12px;
+    border-bottom: 1.5px solid #f1f5f9;
+    padding-bottom: 6px;
+}
+
+/* Info Grid - 2 Columns to save height */
+.info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.info { font-size: 12px; color: #334155; line-height: 1.3; }
+.info b { 
+    color: #94a3b8; font-size: 9px; display: block; 
+    text-transform: uppercase; margin-bottom: 2px; letter-spacing: 0.5px;
+}
+
+.address-box {
+    margin-top: 10px;
+    padding-top: 8px;
+    border-top: 1px dashed #e2e8f0;
+    font-size: 11.5px;
+    color: #475569;
+}
+.address-box b { color: #94a3b8; font-size: 9px; text-transform: uppercase; margin-right: 5px; }
+
+/* Gender Badge */
+.gender-badge { 
+    position: absolute; top: 15px; right: 15px; 
+    background: #f1f5f9; padding: 3px 10px; border-radius: 20px; 
+    font-size: 10px; color: #64748b; font-weight: bold; border: 1px solid #e2e8f0;
+}
+
+/* Loading Spinner */
+.loader-container { 
+    display: flex; align-items: center; justify-content: center; 
+    gap: 10px; width: 100%; color: #1a73e8; font-weight: bold; 
+}
+.spinner { 
+    width: 20px; height: 20px; border: 2px solid #e2e8f0; 
+    border-top-color: #1a73e8; border-radius: 50%; animation: spin 0.8s linear infinite; 
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.no-result { text-align: center; width: 100%; padding: 30px; color: #94a3b8; }
+
+
+
+
+
+        @font-face {
+            font-family: 'MyCustomFont';
+            src: url('Li.ttf') format('truetype'); /* আপনার ফন্ট ফাইলের নাম এখানে দিন */}
+            
+        @font-face {
+            font-family: 'CustomFont';
+            src: url('Ll.ttf') format('truetype'); /* আপনার ফন্ট ফাইলের নাম এখানে দিন */}
+        @font-face {
+            font-family: 'NameFont';
+            src: url('AdorshoLip.ttf') format('truetype'); /* আপনার ফন্ট ফাইলের নাম এখানে দিন */}
+
+     @font-face {
+            font-family: 'InfoFont';
+            src: url('AdorshoLip.ttf') format('truetype'); /* আপনার ফন্ট ফাইলের নাম এখানে দিন */}
+            
+            select, input, textarea,.election-title, .field-group{
+            font-family: 'myCustomFont', sans-serif;
+        }
+h2 {
+            font-family: 'CustomFont', sans-serif;
+        }
+.name-tag,button{
+    font-family: 'NameFont', sans-serif;
+    
+        }
+.info{
+    font-family: 'InfoFont', sans-serif;
+        }
+        
+        
+        
+        
+        /* বাটন স্টাইল */
+.notice-button {
+    background-color: #f39c12;
+    color: white;
+    padding: 3px 5px;
+    border: none;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    transition: 0.3s;
+    
+}
+
+.notice-button:hover {
+    background-color: #e67e22;
+    transform: scale(1.05);
+}
+
+/* পপ-আপ ব্যাকগ্রাউন্ড (Overlay) */
+.modal {
+    display: none; /* শুরুতে লুকানো থাকবে */
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.6); /* হালকা কালো স্বচ্ছ ব্যাকগ্রাউন্ড */
+}
+
+/* পপ-আপ বক্স */
+.modal-content {
+    background-color: #fff;
+    margin: 15% auto;
+    padding: 20px;
+    border-radius: 12px;
+    width: 80%;
+    max-width: 450px;
+    position: relative;
+    animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+    from { transform: translateY(-50px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+/* বন্ধ করার বাটন (x) */
+.close-btn {
+    position: absolute;
+    right: 15px;
+    top: 10px;
+    font-size: 28px;
+    font-weight: bold;
+    color: #aaa;
+    cursor: pointer;
+}
+
+.close-btn:hover { color: #000; }
+
+.modal-header h3 { margin-top: 0; color: #1a73e8; border-bottom: 2px solid #eee; padding-bottom: 10px; }
+
+.modal-body { line-height: 1.6; color: #333; }
+
+.modal-footer { text-align: right; margin-top: 20px; }
+
+.btn-close-bottom {
+    background: #1a73e8;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+}
